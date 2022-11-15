@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Изменение заказа</title>
+    <meta charset="utf-8" />
+</head>
+<body>
+  <form name="createOrderForm" enctype="multipart/form-data" method="post">
+      <h1>Введите данные</h1>
+        <input id="fio_text" name="fio_text" type="text" placeholder="ФИО" class="form-control input-md"></br></br>
+        <input id="number_text" name="number_text" type="text" placeholder="Номер телефона"class="form-control input-md"></br></br>
+        <input id="mail_text" name="mail_text" type="text" placeholder="Почта"class="form-control input-md"></br></br>
+        <input id="address_text" name="address_text" type="text" placeholder="Адрес доставки" class="form-control input-md"></br></br>
+        <label for="checkboxes-0">
+          <input type="checkbox" name="checkboxes" id="checkboxes" onchange="fun1()">
+            Самовывоз
+          </label></br></br>
+        <select id="categoty_text" name="categoty_text" class="form-control">
+          <option value="Печать">Печать</option>
+          <option value="Фотопечать">Фотопечать</option>
+          <option value="Печать на баннере">Печать на баннере</option>
+        </select> </br></br>
+        <textarea class="form-control" id="desc_text" name="desc_text">Описание заказа</textarea></br></br>
+        <input type="file" name="file" id="files", multiple></br></br>
+				<label for="checkboxes-1">
+          <input type="checkbox" name="checkboxes_file" id="checkboxes_file" onchange="fun_file()">
+            Не изменять ранее загруженные файлы
+          </label></br></br>
+        <button type="submit" id="submit">Изменить заказ</button>
+    </form>
+    <script>
+			document.getElementById('fio_text').value = "<%=fio %>";
+			document.getElementById('number_text').value = "<%=num_tel %>";
+			document.getElementById('mail_text').value = "<%=email %>";
+			document.getElementById('categoty_text').value = "<%=category %>";
+			document.getElementById('desc_text').value = "<%=desc %>";
+
+			if ("<%=address %>" == "Самовывоз") {
+				document.getElementById('address_text').disabled = true;
+				document.getElementById('checkboxes').checked = true;
+			} else {
+				document.getElementById('address_text').disabled = false;
+				document.getElementById('address_text').value = "<%=address %>";
+			}
+
+      function fun1() {
+        if (document.getElementById('checkboxes').checked) {
+          document.getElementById('address_text').disabled = true;
+        } else {
+          document.getElementById('address_text').disabled = false;
+        }
+      }
+
+			function fun_file() {
+				if (document.getElementById('checkboxes_file').checked) {
+					document.getElementById('files').disabled = true;
+				} else {
+					document.getElementById('files').disabled = false;
+				}
+			}
+
+        document.getElementById("submit").addEventListener("click", function (e) {
+             e.preventDefault();
+           
+            let orederform = document.forms["createOrderForm"];           //получаем данные формы
+            var quantity = orederform.elements["file"].files.length;      //количество файлов для загрузки
+
+            let fio = orederform.elements["fio_text"].value;              //ФИО клиента
+            let number = orederform.elements["number_text"].value;        //номер телефона клиента
+            let email = orederform.elements["mail_text"].value;            //почту клиента
+            let desc = orederform.elements["desc_text"].value;            //описание заказа
+            let address = orederform.elements["address_text"].value;      //адрес доставки
+            let category = orederform.elements["categoty_text"].value
+
+            var xhr = new XMLHttpRequest(); //Запрос на сервер
+            var form = new FormData(); //Форма для отправки данных
+
+						if (!document.getElementById("checkboxes").checked) {
+							for (var i = 0; i < quantity; i++)
+							{
+								let param_name = "file" + i;
+								form.append(param_name, orederform.elements["file"].files[i]); //Добавляем файл в форму
+							}
+						}
+
+            if (document.getElementById("checkboxes").checked) {
+              address = "Самовывоз";
+            }
+
+            form.append("fio", fio); //Добавляем данные в форму
+            form.append("number", number);
+            form.append("email", email);
+            form.append("desc", desc);
+            form.append("address", address);
+            form.append("category", category);
+						form.append("order", "<%=order %>");
+            xhr.open("post", "/orderchange", true); //Указываем куда делать запрос
+            xhr.send(form); //Отправляем форму с данными на сервер
+
+            xhr.addEventListener("load", function () {
+            // получаем и парсим ответ сервера
+              let receivedUser = xhr.response;
+              var form2 = document.createElement('form');
+              let query = "/info/" + receivedUser;
+              form2.action = query;
+              form2.method = 'GET';
+              document.body.append(form2);
+              form2.submit();
+            });
+         });
+    </script>
+</body>
+<html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Изменение заказа</title>
+    <meta charset="utf-8" />
+</head>
+<body>
+  <form name="changeOrderForm" enctype="multipart/form-data" method="post">
+      <h1>Введите номер заказа</h1>
+        <input id="order_text" name="order_text" type="text" placeholder="Номер заказа" class="form-control input-md"></br></br>
+        <button type="submit" id="submit">Далее</button>
+    </form>
+    <script>
+        document.getElementById("submit").addEventListener("click", function (e) {
+             e.preventDefault();
+           
+            let orederform = document.forms["changeOrderForm"];               //получаем данные формы
+            let order = orederform.elements["order_text"].value;       //номер заказа
+
+            var xhr = new XMLHttpRequest(); //Запрос на сервер
+            var form = new FormData(); //Форма для отправки данных
+
+            form.append("order", order); //Добавляем данные в форму
+            form.append("from", "changeoreder");
+
+            xhr.open("post", "/checkstatusorder", true); //Указываем куда делать запрос
+            xhr.send(form); //Отправляем форму с данными на сервер
+
+            xhr.addEventListener("load", function () {
+            // получаем и парсим ответ сервера
+
+              let receivedUser = xhr.response;
+              var form2 = document.createElement('form');
+              var query = "";
+                if (receivedUser != "unblocked") {
+                  query = "/info/" + receivedUser;
+                } else {
+                  query = "/changeoreder/" + order;
+                }
+
+                form2.action = query;
+                form2.method = 'GET';
+                document.body.append(form2);
+                form2.submit();
+            });
+         });
+    </script>
+</body>
+<html>
