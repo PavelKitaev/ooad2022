@@ -1,0 +1,53 @@
+body {
+  background-image: url('/public/background.png');
+  background-size: cover;
+}
+
+.t1 {
+  position: absolute;
+  width: 191px;
+  height: 32px;
+  left: 29.58%;
+  top: 41px;
+}
+
+.t2 {
+  position: absolute;
+  width: 218px;
+  height: 32px;
+  left: 43.12%;
+  top: 41px;
+}
+
+.t3 {
+  position: absolute;
+  width: 217px;
+  height: 32px;
+  left: 58.07%;
+  top: 41px;
+}
+
+.t4 {
+  position: absolute;
+  width: 226px;
+  height: 32px;
+  left: 72.96%;
+  top: 41px;
+}
+
+button {
+  background-color:transparent;
+	border-radius:28px;
+  border:0px solid #ffffff;
+	display:inline-block;
+	cursor:pointer;
+	color: #ffffff;
+  width: 245px;
+
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 1.2em;
+  line-height: 32px;
+	text-decoration:none;
+}

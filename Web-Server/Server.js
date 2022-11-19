@@ -6,7 +6,8 @@ const db_connect = require("mysql");				        //Для работы с баз�
 var app = express();
 
 app.set('view engine', 'ejs');                  //Движок
-app.use('/public', express.static('public'));   //Директория с публичным содержимым
+//app.use('/public', express.static('public'));   //Директория с публичным содержимым
+app.use('/assets', express.static('assets'));   //Директория с публичным содержимым
 
 //--------------------------Подключение к базе данных--------------------------//
 const db = db_connect.createConnection({

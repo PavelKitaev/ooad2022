@@ -1,47 +1,164 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Изменение заказа</title>
-    <meta charset="utf-8" />
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+  <link rel="shortcut icon" href="../assets/images/logo.png" type="image/x-icon">
+
+  <title>Изменение заказа</title>
+  <link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/bootstrap/css/bootstrap-grid.min.css">
+  <link rel="stylesheet" href="../assets/bootstrap/css/bootstrap-reboot.min.css">
+  <link rel="stylesheet" href="../assets/dropdown/css/style.css">
+  <link rel="stylesheet" href="../assets/socicon/css/styles.css">
+  <link rel="preload" as="style" href="../assets/mobirise/css/mbr-additional.css">
+  <link rel="stylesheet" href="../assets/mobirise/css/mbr-additional.css" type="text/css">
 </head>
 <body>
-  <form name="createOrderForm" enctype="multipart/form-data" method="post">
-      <h1>Введите данные</h1>
-        <input id="fio_text" name="fio_text" type="text" placeholder="ФИО" class="form-control input-md"></br></br>
-        <input id="number_text" name="number_text" type="text" placeholder="Номер телефона"class="form-control input-md"></br></br>
-        <input id="mail_text" name="mail_text" type="text" placeholder="Почта"class="form-control input-md"></br></br>
-        <input id="address_text" name="address_text" type="text" placeholder="Адрес доставки" class="form-control input-md"></br></br>
-        <label for="checkboxes-0">
-          <input type="checkbox" name="checkboxes" id="checkboxes" onchange="fun1()">
-            Самовывоз
-          </label></br></br>
-        <select id="categoty_text" name="categoty_text" class="form-control">
-          <option value="Печать">Печать</option>
-          <option value="Фотопечать">Фотопечать</option>
-          <option value="Печать на баннере">Печать на баннере</option>
-        </select> </br></br>
-        <textarea class="form-control" id="desc_text" name="desc_text">Описание заказа</textarea></br></br>
-        <input type="file" name="file" id="files", multiple></br></br>
-				<label for="checkboxes-1">
-          <input type="checkbox" name="checkboxes_file" id="checkboxes_file" onchange="fun_file()">
-            Не изменять ранее загруженные файлы
-          </label></br></br>
-        <button type="submit" id="submit">Изменить заказ</button>
-    </form>
+  <section data-bs-version="5.1" class="menu menu1 cid-tnhVCjoK2I" once="menu" id="menu1-p">
+    <nav class="navbar navbar-dropdown navbar-fixed-top navbar-expand-lg">
+      <div class="container-fluid">
+        <div class="navbar-brand">
+        </div>
+        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                data-bs-toggle="collapse" data-target="#navbarSupportedContent"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarNavAltMarkup"
+                aria-expanded="false" aria-label="Toggle navigation">
+          <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav nav-dropdown nav-right navbar-nav-top-padding" data-app-modern-menu="true">
+            <li class="nav-item"><a class="nav-link link text-white text-primary display-4" href="/createorder">Создать заказ</a></li>
+            <li class="nav-item"><a class="nav-link link text-white display-4" href="/changeoreder">Изменить заказ</a></li>
+            <li class="nav-item"><a class="nav-link link text-white display-4" href="/cancelorder">Отменить заказ</a></li>
+            <li class="nav-item"><a class="nav-link link text-white display-4" href="/trackorder">Отследить заказ<br></a>
+            </li></ul>
+          </div>
+        </div>
+      </nav>
+    </section>
+    <section data-bs-version="5.1" class="form5 cid-tnkG29xAAG" id="form5-q">
+      <div class="mbr-overlay"></div>
+      <div class="container-fluid">
+        <div class="mbr-section-head">
+          <h3 class="mbr-section-title mbr-fonts-style  mb-0 display-2"><strong>Введите данные</strong></h3>
+        </div>
+        <div class="row justify-content-center mt-4">
+          <div class="col-lg-8 mx-auto mbr-form" data-form-type="formoid">
+            <form name="createOrderForm" enctype="multipart/form-data" method="post" class="mbr-form form-with-styler">
+              <div class="dragArea row">
+                <div class="col-12 form-group mb-3" data-for="fio">
+                  <input type="text" name="fio_text" placeholder="ФИО" class="form-control" id="fio_text">
+                </div>
+                <div class="col-12 form-group mb-3" data-for="url">
+                  <input type="text" name="number_text" placeholder="Номер телефона" class="form-control" value="" id="number_text">
+                </div>
+                <div class="col-12 form-group mb-3" data-for="email">
+                  <input type="email" name="mail_text" placeholder="E-mail" class="form-control" id="mail_text">
+                </div>
+                <div class="col-12 form-group mb-3" data-for="textarea">
+                  <input type="text" name="text" placeholder="Адрес доставки" class="form-control" id="address_text">
+                </div>
+                <div class="col-12 form-group mb-3">
+                  <div class="form-control fcol-lg-12 col-md-12 col-sm-12 align-center">
+                    <input type="checkbox" name="checkboxes" id="checkboxes" onchange="fun1()">
+                    <label for="checkboxes">Самовывоз</label><br>
+                  </div>
+                </div>
+                <div class="col-12 form-group mb-3">
+                  <div class="fcol-lg-12 col-md-12 col-sm-12 align-center mbr-section-btn">
+                    <select id="category_text" name="category_text" class="form-control select">
+                      <option value="Печать">Печать</option>
+                      <option value="Фотопечать">Фотопечать</option>
+                      <option value="Печать на баннере">Печать на баннере</option>
+                      <option value="3D печать">3D печать</option>
+                      <option value="Гравировка">Гравировка</option>
+                      <option value="Лазерная резка">Лазерная резка</option>
+                      <option value="Изготовление наклейки">Изготовление наклейки</option>
+                      <option value="Фото на документы">Фото на документы</option>
+                      <option value="Печать документов">Печать документов</option>
+                      <option value="Шелкография">Шелкография</option>
+                      <option value="Тиснение фольгой">Тиснение фольгой</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-12 form-group mb-3" data-for="textarea">
+                  <textarea name="desc_text" placeholder="Описание заказа" class="form-control" id="desc_text"></textarea>
+                </div>
+                <div class="col-12 form-group mb-3">
+                  <div class="form-control fcol-lg-12 col-md-12 col-sm-12 align-center">
+                    <input type="checkbox" name="checkboxes_file" id="checkboxes_file" onchange="fun_file()">
+                    <label for="checkboxes_file">Не изменять ранее загруженные файлы</label><br>
+                  </div>
+                </div>
+                <div class="col-md col-sm-12">
+                  <input name="file" type="file" class="field__file" id="field__file" multiple>
+                  <label class="field__file-wrapper" for="field__file">
+                    <div class="field__file-button" value="1" id="btn_file">Выбрать</div>
+                    <div class="field__file-fake">Файл не выбран</div>
+                  </label>
+                </div>
+                <div class="col-md col-sm-12  mbr-section-btn margin-left: auto" data-for="name">
+                  <button type="submit" id="submit" class="btn btn-primary display-4">Изменить заказ</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="display-7" style="padding: 0;
+                                  align-items: center;
+                                  justify-content: center;
+                                  flex-wrap: wrap;
+                                  align-content: center;
+                                  display: flex;
+                                  position: relative;
+                                  height: 4rem;">
+    <script src="../assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/smoothscroll/smooth-scroll.js"></script>
+    <script src="../assets/ytplayer/index.js"></script>
+    <script src="../assets/dropdown/js/navbar-dropdown.js"></script>
     <script>
-			document.getElementById('fio_text').value = "<%=fio %>";
-			document.getElementById('number_text').value = "<%=num_tel %>";
-			document.getElementById('mail_text').value = "<%=email %>";
-			document.getElementById('categoty_text').value = "<%=category %>";
-			document.getElementById('desc_text').value = "<%=desc %>";
+      let fields = document.querySelectorAll('.field__file');
+      Array.prototype.forEach.call(fields, function (input) {
+        let label = input.nextElementSibling,
+        labelVal = label.querySelector('.field__file-fake').innerText;
 
-			if ("<%=address %>" == "Самовывоз") {
-				document.getElementById('address_text').disabled = true;
-				document.getElementById('checkboxes').checked = true;
-			} else {
-				document.getElementById('address_text').disabled = false;
-				document.getElementById('address_text').value = "<%=address %>";
-			}
+        input.addEventListener('change', function (e) {
+          let countFiles = '';
+          if (this.files && this.files.length >= 1) {
+            countFiles = this.files.length;
+          }
+
+          if (countFiles) {
+            label.querySelector('.field__file-fake').innerText = 'Выбрано файлов: ' + countFiles;
+          } else {
+            label.querySelector('.field__file-fake').innerText = labelVal;
+          }
+        });
+      });
+    </script>
+    <script>
+      document.getElementById('fio_text').value = "<%=fio %>";
+      document.getElementById('number_text').value = "<%=num_tel %>";
+      document.getElementById('mail_text').value = "<%=email %>";
+      document.getElementById('category_text').value = "<%=category %>";
+      document.getElementById('desc_text').value = "<%=desc %>";
+
+      if ("<%=address %>" == "Самовывоз") {
+        document.getElementById('address_text').disabled = true;
+        document.getElementById('checkboxes').checked = true;
+      } else {
+        document.getElementById('address_text').disabled = false;
+        document.getElementById('address_text').value = "<%=address %>";
+      }
 
       function fun1() {
         if (document.getElementById('checkboxes').checked) {
@@ -51,63 +168,64 @@
         }
       }
 
-			function fun_file() {
-				if (document.getElementById('checkboxes_file').checked) {
-					document.getElementById('files').disabled = true;
-				} else {
-					document.getElementById('files').disabled = false;
-				}
-			}
+      function fun_file() {
+        if (document.getElementById('checkboxes_file').checked) {
+          document.getElementById('field__file').disabled = true;
+          document.getElementById('btn_file').value = "0";
+        } else {
+          document.getElementById('field__file').disabled = false;
+          document.getElementById('btn_file').value = "1";
+        }
+      }
 
-        document.getElementById("submit").addEventListener("click", function (e) {
-             e.preventDefault();
-           
-            let orederform = document.forms["createOrderForm"];           //получаем данные формы
-            var quantity = orederform.elements["file"].files.length;      //количество файлов для загрузки
+      document.getElementById("submit").addEventListener("click", function (e) {
+        e.preventDefault();
+        let orederform = document.forms["createOrderForm"];           //получаем данные формы
+        var quantity = orederform.elements["file"].files.length;      //количество файлов для загрузки
 
-            let fio = orederform.elements["fio_text"].value;              //ФИО клиента
-            let number = orederform.elements["number_text"].value;        //номер телефона клиента
-            let email = orederform.elements["mail_text"].value;            //почту клиента
-            let desc = orederform.elements["desc_text"].value;            //описание заказа
-            let address = orederform.elements["address_text"].value;      //адрес доставки
-            let category = orederform.elements["categoty_text"].value
+        let fio = orederform.elements["fio_text"].value;              //ФИО клиента
+        let number = orederform.elements["number_text"].value;        //номер телефона клиента
+        let email = orederform.elements["mail_text"].value;            //почту клиента
+        let desc = orederform.elements["desc_text"].value;            //описание заказа
+        let address = orederform.elements["address_text"].value;      //адрес доставки
+        let category = orederform.elements["category_text"].value
 
-            var xhr = new XMLHttpRequest(); //Запрос на сервер
-            var form = new FormData(); //Форма для отправки данных
+        var xhr = new XMLHttpRequest(); //Запрос на сервер
+        var form = new FormData(); //Форма для отправки данных
 
-						if (!document.getElementById("checkboxes").checked) {
-							for (var i = 0; i < quantity; i++)
-							{
-								let param_name = "file" + i;
-								form.append(param_name, orederform.elements["file"].files[i]); //Добавляем файл в форму
-							}
-						}
+        if (!document.getElementById("checkboxes").checked) {
+          for (var i = 0; i < quantity; i++)
+          {
+            let param_name = "file" + i;
+            form.append(param_name, orederform.elements["file"].files[i]); //Добавляем файл в форму
+          }
+        }
 
-            if (document.getElementById("checkboxes").checked) {
-              address = "Самовывоз";
-            }
+        if (document.getElementById("checkboxes").checked) {
+          address = "Самовывоз";
+        }
 
-            form.append("fio", fio); //Добавляем данные в форму
-            form.append("number", number);
-            form.append("email", email);
-            form.append("desc", desc);
-            form.append("address", address);
-            form.append("category", category);
-						form.append("order", "<%=order %>");
-            xhr.open("post", "/orderchange", true); //Указываем куда делать запрос
-            xhr.send(form); //Отправляем форму с данными на сервер
+        form.append("fio", fio); //Добавляем данные в форму
+        form.append("number", number);
+        form.append("email", email);
+        form.append("desc", desc);
+        form.append("address", address);
+        form.append("category", category);
+        form.append("order", "<%=order %>");
+        xhr.open("post", "/orderchange", true); //Указываем куда делать запрос
+        xhr.send(form); //Отправляем форму с данными на сервер
 
-            xhr.addEventListener("load", function () {
-            // получаем и парсим ответ сервера
-              let receivedUser = xhr.response;
-              var form2 = document.createElement('form');
-              let query = "/info/" + receivedUser;
-              form2.action = query;
-              form2.method = 'GET';
-              document.body.append(form2);
-              form2.submit();
-            });
-         });
-    </script>
-</body>
-<html>
+        xhr.addEventListener("load", function () {
+        // получаем и парсим ответ сервера
+          let receivedUser = xhr.response;
+          var form2 = document.createElement('form');
+          let query = "/info/" + receivedUser;
+          form2.action = query;
+          form2.method = 'GET';
+          document.body.append(form2);
+          form2.submit();
+        });
+      });
+    </script>
+  </body>
+</html>
