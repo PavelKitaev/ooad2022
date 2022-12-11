@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/images">
+        <file alias="icon_settings">images/icon_settings.png</file>
+        <file alias="background">images/background.png</file>
+        <file alias="background_basic">images/background_basic.png</file>
+        <file alias="icon_arrow">images/icon_arrow.png</file>
+        <file alias="icon_arrow_new">images/icon_arrow_new.png</file>
+    </qresource>
+</RCC>
