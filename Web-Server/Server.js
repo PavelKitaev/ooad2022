@@ -1,87 +1,36 @@
+var response = "-1";                          //Ответ сервера
+
+var _ = require('underscore');
+
+const util = require('util');
+const setTimeoutPromise = util.promisify(setTimeout);
+
 const express = require('express');         //Маршрутизация
 const multer = require('multer');           //Сохранение файлов от пользователя
 const fs = require("fs");                   //Для файловой системы
 const archiver  = require('archiver');      //Для создания архива
-const db_connect = require("mysql");				        //Для работы с базой данных
 var app = express();
 
-app.set('view engine', 'ejs');                  //Движок
-//app.use('/public', express.static('public'));   //Директория с публичным содержимым
-app.use('/assets', express.static('assets'));   //Директория с публичным содержимым
-
-//--------------------------Подключение к базе данных--------------------------//
-const db = db_connect.createConnection({
-  host:"127.0.0.1",
-  user:"root",
-  password:"1111",
-  database:"youphoto"
+var net = require('net');
+var client = new net.Socket();
+client.connect(1337, '192.168.1.50', function() {
+	console.log('Connected');
+	client.write('WebServer\0');
 });
-db.connect(function(err){
-  if (err)
-  {
-    return console.error("Ошибка: " + err.message);
-  }
-  else
-  {
-    console.log("Подключение к серверу MySQL успешно установлено");
 
-    //Проверка наличия таблицы "clienst"
-    var query_text = "SHOW TABLES FROM youphoto LIKE 'clients'";
-    db.query(query_text, function(err, results){
-      if (err) {
-        console.log("Ошибка запроса к бд(1-1)", err);
-        return;
-      }
-
-      if (results[0] == undefined) {
-        console.log("Таблица 'clients' отсутствует. Создаем...");
-        query_text = "CREATE TABLE clients(id_client int NOT NULL AUTO_INCREMENT, \
-          full_name varchar(45) NOT NULL, num_tel varchar(12) NOT NULL, \
-          email varchar(128) NOT NULL, PRIMARY KEY(id_client));";
-        db.query(query_text, function(err, results){
-          if (err) {
-            console.log("Ошибка запроса к бд(1-2)", err);
-            return;
-          }
-          console.log("Таблица 'clients' создана.");
-        })
-      }
-    })
-
-    //Проверка наличия таблицы "orders"
-    query_text = "SHOW TABLES FROM youphoto LIKE 'orders'";
-    db.query(query_text, function(err, results){
-      if (err) {
-        console.log("Ошибка запроса к бд(2-1)", err);
-        return;
-      }
-
-      if (results[0] == undefined) {
-        console.log("Таблица 'orders' отсутствует. Создаем...");
-        query_text = "CREATE TABLE orders(id_order int NOT NULL AUTO_INCREMENT, \
-          id_client int NOT NULL, id_branch int, status varchar(80) NOT NULL, \
-          address varchar(255) NOT NULL, category varchar(255) NOT NULL, \
-          files varchar(255) NOT NULL, description varchar(512) NOT NULL, \
-          PRIMARY KEY(id_order), \
-          CONSTRAINT fk_client FOREIGN KEY (id_client) \
-          REFERENCES clients(id_client) ON DELETE CASCADE ON UPDATE CASCADE);";
-        db.query(query_text, function(err, results){
-          if (err) {
-            console.log("Ошибка запроса к бд(2-2)", err);
-            return;
-          }
-          console.log("Таблица 'orders' создана.");
-        })
-      }
-    })
-  }
+client.on('data', function(data) {
+	console.log('Received response: ' + data);
+  response = data.toString();
 });
+
+app.set('view engine', 'ejs');                    //Движок
+app.use('/assets', express.static('assets'));     //Директория с публичным содержимым
 //-----------------------------------------------------------------------------//
 
 //------------------------Директория для хранения файлов-----------------------//
 const storage = multer.diskStorage({
    //Директория в которую будут сохранятся файлы
-   destination: function(req, file, cb) {cb(null, 'uploads/')},
+   destination: function(req, file, cb) {cb(null, 'C:/YouPhotoFilesClients/')},
    //Имя для сохраняемого файла оставляем оригинальное
    filename: function(req, file, cb) {cb(null , file.originalname);}
  });
@@ -99,89 +48,77 @@ app.get('/trackorder', function(req, res) { res.sendFile(__dirname + "/trackorde
 //--------------------------Обработка создания заказа--------------------------//
 app.post('/ordercreation', upload.any(), function (req, res, next) {
   var id_client = -1;
-  var files_data = "";
+  var files_data = "NULL";
   //Если были получены файлы, добавляем их названия в строку
   if (req.files.length > 0)
   {
+    files_data = req.files.length + ":";
+
     for (let i = 0; i < req.files.length; i++)
     {
-      files_data += req.files[i].originalname + "|";
+      files_data += req.files[i].originalname;
+
+      if (i != req.files.length - 1) {
+        files_data += ":";
+      }
     }
-  } else {  //Если файлов нет, указываем нулл
-    files_data = "NULL";
   }
 
-   //Добавляем данные в базу
-  db.query("INSERT INTO clients (full_name, num_tel, email) values(?, ?, ?)",
-  [req.body.fio, req.body.number, req.body.email], function(err, rows){
-    if (err) {
-      console.log("Ошибка вставки данных в БД (3-1)", err);
-      return;
-    }
-    console.log("Вставка данных в БД успешна выполнена");
+  //Отправляем данные на сервер
+  let temp = "CreateOrder:" + req.body.fio + ";" + req.body.number + ";" + req.body.email + ";" +
+  req.body.address + ";" + files_data + ";" + req.body.category + ";" + req.body.desc + '\0';
+
+  client.write(temp);
+
+  setTimeoutPromise(1000, 'foobar').then((value) => {
+	  if (response.includes("-1")){
+		  res.send("Ошибка, попробуйте позже");
+	  }
+	  else {
+		res.send("Ваш заказ создан под номером - " + response);
+	  }
+    
+    response = "-1";
   });
-
-  db.query("SELECT * FROM clients WHERE id_client = LAST_INSERT_ID();", function(err, results){
-    if (err) {
-      console.log("Ошибка запроса к бд(3-2)", err);
-      res.send("Error!");
-      return;
-    }
-    id_client = results[0].id_client;
-
-    db.query("INSERT INTO orders (id_client, status, address, files, category, description) values(?, ?, ?, ?, ?, ?)",
-    [id_client, "Принят, ожидает подтверждения", req.body.address, files_data, req.body.category, req.body.desc],
-    function(err, rows){
-      if (err) {
-        console.log("Ошибка вставки данных в БД (3-3)", err);
-        res.send("Error!");
-        return;
-      }
-      console.log("Вставка данных в БД успешна выполнена");
-
-      db.query("SELECT * FROM orders WHERE id_order = LAST_INSERT_ID()", function(err, results){
-        if (err) {
-          console.log("Ошибка запроса к бд(3-4)", err);
-          res.send("error");
-          return;
-        }
-        res.send("Ваш заказ создан под номером - " + results[0].id_order);
-      })
-    })
-  })
 });
 //-----------------------------------------------------------------------------//
 
-//--------------------------Обработка изменения заказа-------------------------//
+
+//-------------------------Отслеживание/Изменение заказа-----------------------//
 app.post('/checkstatusorder', upload.any(), function (req, res, next) {
   var from = req.body.from;
-  db.query("SELECT status FROM orders WHERE id_order = ?", [req.body.order], function(err, results){
-    if (err) {
-      console.log("Ошибка запроса к бд(4-1)", err);
-      res.send("error");
-      return;
-    }
-    //Если получили стату, значит такой заказ существует
-    if (results[0]) {
-      var status = results[0].status;
-      if (from === 'changeoreder'){
 
-        if (status == "В работе"){
+  //Отправляем данные на сервер
+  let temp = "GiveStatus:" + req.body.order + '\0';
+
+  client.write(temp);
+
+  setTimeoutPromise(1000, 'foobar').then((value) => {
+    if (!response.includes("-1")) {
+      if (from === 'changeoreder'){
+        if (response.includes("В работе")){
           res.send("blocked");
-        } else if (status == "Отменен заказчиком" || status == "Отменен менеджером"){
+        } 
+		else if (response.includes("Отменен заказчиком") || response.includes("Отменен менеджером")){
           res.send("cancelled");
-        } else {
+        } 
+		else {
           res.send("unblocked");
         }
-      } else if (from === 'trackorder') {
-        res.send(status);
+      } 
+	  else if (from === 'trackorder') {
+		res.send(response);
       }
-    } else {
+    }
+    else {
       res.send("not found");
     }
-  })
+
+    response = "-1";
+  });
 });
 //-----------------------------------------------------------------------------//
+
 
 //---------------------------Отображение информации----------------------------//
 app.get('/info/:data', function(req, res) {
@@ -208,30 +145,37 @@ app.get('/info/:data', function(req, res) {
 //---------------------Страница с редактированием заказа-----------------------//
 app.get('/changeoreder/:data', function(req, res) {
   var order = req.params.data;
-  var files = "null";
+
   var address = "null";
-  var id_client = -1;
   var fio = "null";
   var num_tel = "null";
   var category = "null";
   var email = "null";
   var desc = "null";
 
-  db.query("SELECT * FROM orders LEFT JOIN clients ON orders.id_client = clients.id_client WHERE id_order = ?",
-    [order], function(err, results){
-    if (err) {
-      console.log("Ошибка запроса к бд(5-1)", err);
-      res.send("error");
-      return;
-    }
+  console.log(typeof response);
 
-    files = results[0].files;
-    address = results[0].address;
-    fio = results[0].full_name;
-    num_tel = results[0].num_tel;
-    category = results[0].category;
-    email = results[0].email;
-    desc = results[0].description;
+  //Отправляем данные на сервер
+  let temp = "GiveOrderData:" + order + '\0';
+
+  client.write(temp);
+
+  setTimeoutPromise(1000, 'foobar').then((value) => {
+    //[0] - fio
+    //[1] - number tel
+    //[2] email
+    //[3] - address
+    //[4] - category
+    //[5] - description
+
+    let parseData = response.split(";");
+
+    fio = parseData[0];
+    num_tel = parseData[1];
+    email = parseData[2];
+    address = parseData[3];
+    category = parseData[4];
+    desc = parseData[5];
 
     res.render('changeoreder', {
       fio: fio,
@@ -239,11 +183,13 @@ app.get('/changeoreder/:data', function(req, res) {
       num_tel: num_tel,
       email: email,
       category: category,
-      files: files,
       desc: desc,
       order: order,
       });
-  })
+
+
+    response = "-1";
+  });
 })
 //-----------------------------------------------------------------------------//
 
@@ -251,62 +197,51 @@ app.get('/changeoreder/:data', function(req, res) {
 app.post('/orderchange', upload.any(), function (req, res, next) {
   var id_order = req.body.order;
   var id_client = -1;
-  var files_data = "";
+  var files_data = "NULL";
+
   //Если были получены файлы, добавляем их названия в строку
-  console.log("ФАЙЛОВ ПОЛУЧЕНО: " + req.files.length);
   if (req.files.length > 0) {
-    console.log("Добавляем имена файлов");
-     for (let i = 0; i < req.files.length; i++) {
-       files_data += req.files[i].originalname + "|";
-     }
-  } else {
-    files_data = "NULL"
+    console.log("Files: " + req.files.length);
+
+    files_data = req.files.length + ":";
+
+    for (let i = 0; i < req.files.length; i++) {
+      files_data += req.files[i].originalname;
+
+      if (i != req.files.length - 1) {
+        files_data += ":";
+      }
+    }
   }
 
-  db.query("SELECT id_client FROM orders WHERE id_order = ?", [id_order], function(err, results){
-    if (err) {
-      console.log("Ошибка запроса к БД (6-1)", err);
-      return;
-    }
-    id_client = results[0].id_client;
-    console.log(id_client);
+  //Отправляем данные на сервер
+  let temp = "UpdateOrder:" + id_order + ";" + req.body.fio
+              + ";" + req.body.number + ";" + req.body.email + ";" + req.body.address
+              + ";" + req.body.category + ";" + req.body.desc + ";";
 
-    db.query("UPDATE clients SET full_name = ?, num_tel = ?, email = ? WHERE id_client = ?",
-    [req.body.fio, req.body.number, req.body.email, id_client], function(err, rows){
-      if (err) {
-        console.log("Ошибка вставки данных в БД (6-2)", err);
-        res.send("error");
-        return;
-      }
-      console.log("Вставка данных в БД успешна выполнена");
-    });
+  if (files_data.includes("NULL")) {
+    console.log("files null!");
+    temp += "NULL\0";
+  }
+  else {
+    console.log("files is not null!");
+    temp += files_data;
+    temp += '\0';
+  }
 
-    if (files_data === "NULL") {
-      console.log("Изменяем базу без файлов");
-      db.query("UPDATE orders SET address = ?, category = ?, description = ? WHERE id_order = ?",
-      [req.body.address, req.body.category, req.body.desc, id_order], function(err, rows){
-        if (err) {
-          console.log("Ошибка вставки данных в БД (6-2)", err);
-          res.send("error");
-          return;
-        }
-        console.log("Вставка данных в БД успешна выполнена");
-        res.send("Ваш заказ изменен");
-      });
-    } else {
-      console.log("Изменяем базу с файлами");
-      db.query("UPDATE orders SET address = ?, category = ?, files = ?, description = ? WHERE id_order = ?",
-      [req.body.address, req.body.category, files_data, req.body.desc, id_order], function(err, rows){
-        if (err) {
-          console.log("Ошибка вставки данных в БД (6-3)", err);
-          res.send("error");
-          return;
-        }
-        console.log("Вставка данных в БД успешна выполнена");
-        res.send("Ваш заказ изменен");
-      });
+  client.write(temp);
+
+  setTimeoutPromise(1000, 'foobar').then((value) => {
+    if (response.includes('Failed')) {
+      res.send("Ошибка, попробуйте позже");
     }
+    else {
+      res.send("Ваш заказ изменен");
+    }
+
+    response = "-1";
   });
+
 });
 //-----------------------------------------------------------------------------//
 
@@ -314,15 +249,22 @@ app.post('/orderchange', upload.any(), function (req, res, next) {
 app.post('/cancelorder', upload.any(), function (req, res, next) {
   var id_order = req.body.order;
 
-  db.query("UPDATE orders SET status = ? WHERE id_order = ?",
-  ["Отменен заказчиком", id_order], function(err, rows) {
-    if (err) {
-      console.log("Ошибка обновления данных в БД (1-1)", err);
-      res.send("error");
-      return;
+  //Отправляем данные на сервер
+  let temp = "CancelOrder:" + req.body.order + '\0';
+
+  client.write(temp);
+
+  setTimeoutPromise(1000, 'foobar').then((value) => {
+    if (response != "-1") {
+      res.send("Ваш заказ отменен");
     }
-    res.send("Ваш заказ отменен");
+    else {
+      res.send("Ошибка, попробуйте позже");
+    }
+
+    response = "-1";
   });
+
 });
 //-----------------------------------------------------------------------------//
 

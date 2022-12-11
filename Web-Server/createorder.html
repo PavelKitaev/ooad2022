@@ -53,16 +53,16 @@
           <form name="createOrderForm" enctype="multipart/form-data" method="post" class="mbr-form form-with-styler">
             <div class="dragArea row">
               <div class="col-12 form-group mb-3" data-for="fio">
-                <input type="text" name="fio_text" placeholder="ФИО" class="form-control" id="fio_text">
+                <input type="text" name="fio_text" maxlength="45" placeholder="ФИО" class="form-control" id="fio_text">
               </div>
               <div class="col-12 form-group mb-3" data-for="url">
-                <input type="text" name="number_text" placeholder="Номер телефона" class="form-control" value="" id="number_text">
+                <input type="text" name="number_text" maxlength="12" placeholder="Номер телефона" class="form-control" value="" id="number_text">
               </div>
               <div class="col-12 form-group mb-3" data-for="email">
-                <input type="email" name="mail_text" placeholder="E-mail" class="form-control" id="mail_text">
+                <input type="email" name="mail_text" maxlength="128" placeholder="E-mail" class="form-control" id="mail_text">
               </div>
               <div class="col-12 form-group mb-3" data-for="textarea">
-                <input type="text" name="text" placeholder="Адрес доставки" class="form-control" id="address_text">
+                <input type="text" name="address_text" maxlength="250" placeholder="Адрес доставки" class="form-control" id="address_text">
               </div>
               <div class="col-12 form-group mb-3">
                 <div class="form-control fcol-lg-12 col-md-12 col-sm-12 align-center">
@@ -88,7 +88,7 @@
                 </div>
               </div>
               <div class="col-12 form-group mb-3" data-for="textarea">
-                <textarea name="desc_text" placeholder="Описание заказа" class="form-control" id="desc_text"></textarea>
+                <textarea name="desc_text" maxlength="250" placeholder="Описание заказа" class="form-control" id="desc_text"></textarea>
               </div>
               <div class="col-md col-sm-12">
                 <input name="file" type="file" class="field__file" id="field__file" multiple>

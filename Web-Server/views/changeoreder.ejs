@@ -193,9 +193,11 @@
         var xhr = new XMLHttpRequest(); //Запрос на сервер
         var form = new FormData(); //Форма для отправки данных
 
-        if (!document.getElementById("checkboxes").checked) {
+        if (!document.getElementById("checkboxes_file").checked) {
           for (var i = 0; i < quantity; i++)
           {
+            console.log("add file");
+
             let param_name = "file" + i;
             form.append(param_name, orederform.elements["file"].files[i]); //Добавляем файл в форму
           }
